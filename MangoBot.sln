@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangoBot.Runner", "MangoBot.Runner\MangoBot.Runner.csproj", "{7E0B718D-74B2-4384-AF68-13347A65BCE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangoBot.SemanticSample", "MangoBot.SemanticSample\MangoBot.SemanticSample.csproj", "{8FE499BC-2EA3-4A25-AB01-604CD01DF20F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_assets", "_assets", "{640DDD12-1B2C-4E1E-AB5C-96A500287581}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+		justfile = justfile
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E0B718D-74B2-4384-AF68-13347A65BCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E0B718D-74B2-4384-AF68-13347A65BCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E0B718D-74B2-4384-AF68-13347A65BCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E0B718D-74B2-4384-AF68-13347A65BCE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE499BC-2EA3-4A25-AB01-604CD01DF20F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE499BC-2EA3-4A25-AB01-604CD01DF20F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE499BC-2EA3-4A25-AB01-604CD01DF20F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE499BC-2EA3-4A25-AB01-604CD01DF20F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

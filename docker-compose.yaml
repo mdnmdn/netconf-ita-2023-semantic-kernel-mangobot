@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - '6979:6379'
+      - '8901:8001'
+    volumes:
+      - ./_data:/data
