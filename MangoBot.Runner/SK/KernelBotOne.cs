@@ -31,8 +31,6 @@ public class KernelBotOne: BaseKernelBot
             new OpenAIRequestSettings() {
                 MaxTokens = 100, Temperature = 1, TopP = 1
             });
-
-
     }
 
     protected override async Task OnMessage(ChatMessage message)
@@ -44,7 +42,7 @@ public class KernelBotOne: BaseKernelBot
                 var result = await _kernel.RunAsync(message.Message, _mainFunction);
                 var response = result.GetValue<string>();
                 if (response.HasValue())
-                    await Discord.SendMessage(message.ChannelId, response!);
+                    await Discord.SendMessage(message.ChannelId, response!, message.OriginalMessage.Id);
                 
                 //await Discord.SendMessage(message.ChannelId, $"Hi {message.Sender} ");
             }

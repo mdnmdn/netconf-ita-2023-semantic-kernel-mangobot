@@ -9,5 +9,6 @@ Console.WriteLine("Hello, World!");
 // await Sample06.RunAsync();
 // await Sample14.RunAsync();
 // await Sample10_ListFunctions.RunAsync();
- await Sample15_SampleTextMemory.RunAsync();
+// await Sample15_SampleTextMemory.RunAsync();
 //await Sample28_ActionPlanner.RunAsync();
+await Sample66_StepwisePlanner.RunAsync();

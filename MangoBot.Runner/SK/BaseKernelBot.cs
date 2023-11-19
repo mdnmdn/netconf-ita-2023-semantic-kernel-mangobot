@@ -5,7 +5,12 @@ public abstract class BaseKernelBot
     protected BaseKernelBot(DiscordEngine discord)
     {
         Discord = discord;
-        discord.OnMessage += OnMessage;
+        //discord.OnMessage += OnMessage;
+        discord.OnMessage += (msg) =>
+        {
+            Task.Run(() => OnMessage(msg));
+            return Task.CompletedTask;
+        };
     }
     
     public virtual Task Init() => Task.CompletedTask; 

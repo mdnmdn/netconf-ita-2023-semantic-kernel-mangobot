@@ -3,7 +3,7 @@ using Microsoft.SemanticKernel;
 
 namespace MangoBot.SemanticSample.Plugins;
 
-public sealed class TimePlugin
+internal sealed class TimePlugin
 {
     /// <summary>
     /// Get the current date

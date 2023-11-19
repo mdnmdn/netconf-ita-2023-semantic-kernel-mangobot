@@ -32,5 +32,6 @@ public class Config
     public string RedisConnectionString  { get; set; }
 
     public string ChatModelId  { get => "gpt-3.5-turbo"; }
+    public string ChatModel4Id  { get => "gpt-4-1106-preview"; }
     public string EmbeddingsModelId  { get => "text-embedding-ada-002"; }
 }
