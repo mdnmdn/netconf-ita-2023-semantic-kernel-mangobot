@@ -23,7 +23,7 @@ public abstract class BaseKernelBot
         Task.Run(async () =>
         {
             await Task.Delay(1000);
-            await Discord.SetBotName($"mango-bot-{BotVersion}");
+            await Discord.SetBotStatus($"mango-bot-{BotVersion}");
             ColorConsole.WriteSuccess($"\ud83e\udd16 Bot version: mango-bot-{BotVersion}");
         });
         return Task.CompletedTask;

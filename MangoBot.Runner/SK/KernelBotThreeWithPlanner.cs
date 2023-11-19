@@ -23,8 +23,7 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
     public KernelBotThreeWithPlanner(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
-            
-            //.WithLoggerFactory(ConsoleLogger.LoggerFactory)
+            .WithLoggerFactory(ColorConsole.LoggerFactory())
             .WithOpenAIChatCompletionService(
                 //modelId: Config.Instance.ChatModelId,
                 modelId: Config.Instance.ChatModel4Id,
@@ -54,9 +53,18 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
         var redisStore = await RedisMemoryStoreFactory.CreateSampleRedisMemoryStoreAsync(); 
         _memory = new SemanticTextMemory(redisStore, embeddingGenerator);
 
-        var memoryPlugin = new TextMemoryPlugin(_memory);
-        _kernel.ImportFunctions(memoryPlugin);
+        var memoryConfig = new SemanticMemoryConfig
+        {
+            Memory = _memory,
+            MaxRelevantFunctions = 0,
+            RelevancyThreshold = null,
+        };
         
+        var memoryPlugin = new TextMemoryPlugin(_memory);
+        var memoryFunctions = _kernel.ImportFunctions(memoryPlugin);
+        
+        
+        // setup time plugin
         _kernel.ImportFunctions(new TimePlugin(), "TimePlugin");
         
         // Setup web search
@@ -67,17 +75,25 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
             _kernel.ImportFunctions(bing, "bing");
         }
         
-        
         // setup discord plugin
         var discordPlugin = new DiscordPlugin(Discord);
         _kernel.ImportFunctions(discordPlugin, "discord");
         
+        
+        
         // setup planner
         var config = new FunctionCallingStepwisePlannerConfig
         {
+            //GetPromptTemplate = () => template,
+            SemanticMemoryConfig = memoryConfig,
+            GetAvailableFunctionsAsync = null,
+            GetFunctionCallback = null,
             MaxIterations = 15,
-            MaxTokens = 4000,
-            
+            MinIterationTimeMs = 0,
+            ModelSettings = null,
+            MaxTokens = 8000,
+            GetStepPromptTemplate = null,
+
         };
         _planner = new FunctionCallingStepwisePlanner(_kernel, config);
         
@@ -104,7 +120,23 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
             {
                 await Discord.SetTyping(message.OriginalMessage.Channel);
 
-                var result = await _planner.ExecuteAsync(message.Message);
+                var input = $"""
+                               Your name is MangoBot and you are discord server bot, be helpful and answer questions about the server and the users.
+
+                               In order do get information about the user you could use the following functions: Recall with the default collection {MessageCollectionName}
+
+                               The finale answer and the direct messages have to be in the same language of the initial message.
+                               
+                               If the you are answering to the initial user don't send a direct message but use the final answer.
+                               
+                               The user sending the message is {message.Sender} and the message is:
+                               
+                               -----------------
+                               {message.Message}
+                               -----------------
+                               """;
+                
+                var result = await _planner.ExecuteAsync(input);
                 var response = result.FinalAnswer;
                 if (response.HasValue())
                     await Discord.SendMessage(message.ChannelId, response!, message.OriginalMessage.Id);

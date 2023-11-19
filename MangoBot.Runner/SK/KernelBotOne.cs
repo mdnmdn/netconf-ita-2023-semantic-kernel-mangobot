@@ -17,8 +17,7 @@ public class KernelBotOne: BaseKernelBot
     public KernelBotOne(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
-            
-            //.WithLoggerFactory(ConsoleLogger.LoggerFactory)
+            .WithLoggerFactory(ColorConsole.LoggerFactory())
             .WithOpenAIChatCompletionService(
                 //modelId: Config.Instance.ChatModelId,
                 modelId: Config.Instance.ChatModel4Id,

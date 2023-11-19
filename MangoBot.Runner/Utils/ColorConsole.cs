@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace MangoBot.Runner.Utils;
 
@@ -229,4 +230,71 @@ namespace MangoBot.Runner.Utils;
         }
 
         #endregion
+
+        public static ILoggerFactory LoggerFactory() => new ColorConsoleLoggerFactory();
+
+        class ColorConsoleLoggerFactory : ILoggerFactory
+        {
+            public void Dispose()
+            {
+            }
+
+            public ILogger CreateLogger(string categoryName) => new ColorConsoleLogger(categoryName);
+
+            public void AddProvider(ILoggerProvider provider)
+            {
+            }
+        }
+        
+        class ColorConsoleLogger(string category): ILogger
+        {
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+                Func<TState, Exception, string> formatter)
+            {
+                var txt = formatter(state, exception);
+                switch (logLevel)
+                {
+                    case LogLevel.Trace:
+                        WriteLine($"[{logLevel}] {category}: - {txt}", ConsoleColor.DarkGray);
+                        break;
+                    case LogLevel.Debug:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Gray);
+                        break;
+                    case LogLevel.Information:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkCyan);
+                        break;
+                    case LogLevel.Warning:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkYellow);
+                        break;
+                    case LogLevel.Error:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Red);
+                        break;
+                    case LogLevel.Critical:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkRed);
+                        break;
+                    case LogLevel.None:
+                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkGray);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+                } 
+            }
+
+            public bool IsEnabled(LogLevel logLevel)
+            {
+                return true;
+            }
+
+            public IDisposable BeginScope<TState>(TState state)
+            {
+                return new DummyDisposable();
+            }
+            
+            private class DummyDisposable: IDisposable
+            {
+                public void Dispose()
+                {
+                }
+            }
+        }
     }

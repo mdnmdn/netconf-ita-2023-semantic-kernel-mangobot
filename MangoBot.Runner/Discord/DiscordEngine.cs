@@ -152,7 +152,7 @@ public class DiscordEngine(string token)
     public record ChannelInfo(ulong Id, string Name, string Topic);
     public record UserInfo(ulong Id, string Name, string Username);
 
-    public Task SetBotName(string status)
+    public Task SetBotStatus(string status)
     {
         return _client.SetCustomStatusAsync(status);
     }
