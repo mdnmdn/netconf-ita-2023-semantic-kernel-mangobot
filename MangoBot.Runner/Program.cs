@@ -17,9 +17,8 @@ public class Program
         //var bot = new KernelBotTwoWithMemory(engine);
         var bot = new KernelBotThreeWithPlanner(engine);
 
-        await bot.Init();
         await engine.Start();
-        
+        await bot.Init();
             
         // Block this task until the program is closed.
         await Task.Delay(-1);

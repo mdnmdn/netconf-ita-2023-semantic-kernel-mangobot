@@ -5,18 +5,23 @@ using Microsoft.SemanticKernel.Plugins.Web;
 
 namespace MangoBot.Runner.SK;
 
+/// <summary>
+/// Simple bot 
+/// </summary>
 public class KernelBotOne: BaseKernelBot
 {
     private readonly IKernel _kernel;
     private readonly ISKFunction _mainFunction;
 
+    protected override string BotVersion { get => "v1"; }
     public KernelBotOne(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
             
             //.WithLoggerFactory(ConsoleLogger.LoggerFactory)
             .WithOpenAIChatCompletionService(
-                modelId: Config.Instance.ChatModelId,
+                //modelId: Config.Instance.ChatModelId,
+                modelId: Config.Instance.ChatModel4Id,
                 apiKey: Config.Instance.OpenAiToken)
             .Build();
 
@@ -33,12 +38,15 @@ public class KernelBotOne: BaseKernelBot
             });
     }
 
+
     protected override async Task OnMessage(ChatMessage message)
     {
         try
         {
             if (message.IsMention)
             {
+                await Discord.SetTyping(message.OriginalMessage.Channel);
+                
                 var result = await _kernel.RunAsync(message.Message, _mainFunction);
                 var response = result.GetValue<string>();
                 if (response.HasValue())

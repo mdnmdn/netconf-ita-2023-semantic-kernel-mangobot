@@ -18,6 +18,8 @@ public class KernelBotTwoWithMemory: BaseKernelBot
     private bool _init = false;
     private SemanticTextMemory? _memory;
     private IDictionary<string, ISKFunction> _memoryFunctions;
+    
+    protected override string BotVersion { get => "v2"; }
 
     public KernelBotTwoWithMemory(DiscordEngine engine) : base(engine)
     {
@@ -80,6 +82,7 @@ public class KernelBotTwoWithMemory: BaseKernelBot
         _memoryFunctions = _kernel.ImportFunctions(memoryPlugin);
         
         _init = true;
+        await base.Init();
     }
 
     protected override async Task OnMessage(ChatMessage message)

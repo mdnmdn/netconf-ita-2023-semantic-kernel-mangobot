@@ -13,19 +13,20 @@ namespace MangoBot.Runner.SK;
 public class KernelBotThreeWithPlanner: BaseKernelBot
 {
     private readonly IKernel _kernel;
-    private readonly ISKFunction _mainFunction;
     const string MessageCollectionName = "mango-messages";
     private bool _init = false;
     private SemanticTextMemory? _memory;
-    private IDictionary<string, ISKFunction> _memoryFunctions;
     private FunctionCallingStepwisePlanner _planner;
 
+    protected override string BotVersion { get => "v3"; }
+    
     public KernelBotThreeWithPlanner(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
             
             //.WithLoggerFactory(ConsoleLogger.LoggerFactory)
             .WithOpenAIChatCompletionService(
+                //modelId: Config.Instance.ChatModelId,
                 modelId: Config.Instance.ChatModel4Id,
                 apiKey: Config.Instance.OpenAiToken)
             .WithOpenAITextEmbeddingGenerationService(Config.Instance.EmbeddingsModelId, Config.Instance.OpenAiToken)
@@ -54,7 +55,8 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
         _memory = new SemanticTextMemory(redisStore, embeddingGenerator);
 
         var memoryPlugin = new TextMemoryPlugin(_memory);
-        _memoryFunctions = _kernel.ImportFunctions(memoryPlugin);
+        _kernel.ImportFunctions(memoryPlugin);
+        
         _kernel.ImportFunctions(new TimePlugin(), "TimePlugin");
         
         // Setup web search
@@ -80,6 +82,7 @@ public class KernelBotThreeWithPlanner: BaseKernelBot
         _planner = new FunctionCallingStepwisePlanner(_kernel, config);
         
         _init = true;
+        await base.Init();
     }
 
     protected override async Task OnMessage(ChatMessage message)
