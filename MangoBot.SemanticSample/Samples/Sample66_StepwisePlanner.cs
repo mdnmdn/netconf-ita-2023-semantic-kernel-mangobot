@@ -21,7 +21,7 @@ public class Sample66_StepwisePlanner
         Console.WriteLine("======== Action Planner ========");
         string openAIModelId = Constants.OpenAIChatModel;
         string openAIApiKey = Constants.OpenAIToken;
-        
+
         IKernel kernel = new KernelBuilder()
             .WithLoggerFactory(ConsoleLogger.LoggerFactory)
             .WithOpenAIChatCompletionService(
@@ -33,7 +33,7 @@ public class Sample66_StepwisePlanner
         kernel.ImportFunctions(new MathPlugin(), "MathPlugin");
         kernel.ImportFunctions(new TimePlugin(), "TimePlugin");
 
-        
+
         var config = new FunctionCallingStepwisePlannerConfig
         {
             MaxIterations = 15,
@@ -47,7 +47,7 @@ public class Sample66_StepwisePlanner
             "What is 387 minus 22? Email the solution to John and Mary.",
             "Write a limerick, translate it to Spanish, and send it to Jane",
         };
-        
+
         foreach (var question in questions)
         {
             FunctionCallingStepwisePlannerResult result = await planner.ExecuteAsync(question);
@@ -57,5 +57,4 @@ public class Sample66_StepwisePlanner
             Console.WriteLine($"Chat history:\n{result.ChatHistory?.AsJson()}");
         }
     }
-    
 }

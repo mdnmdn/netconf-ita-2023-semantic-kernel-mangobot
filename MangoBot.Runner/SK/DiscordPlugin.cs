@@ -1,28 +1,26 @@
 using MangoBot.Runner.Utils;
 using System.ComponentModel;
-using System.Reflection.Metadata;
 using Microsoft.SemanticKernel;
-using YamlDotNet.Serialization.TypeInspectors;
 
 namespace MangoBot.Runner.SK;
 
 public class DiscordPlugin(DiscordEngine discordEngine)
 {
-    
-    [SKFunction, Description("List all the groups of the current discord server in json format" )]
+    [SKFunction, Description("List all the groups of the current discord server in json format")]
     public string ListGroups()
     {
         Console.WriteLine("DiscordPlugin.ListGroups");
         var groups = discordEngine.ListGroups().AsJson();
-        return groups; 
+        return groups;
     }
-    
-    [SKFunction, Description("List all the user of the current discord server in json format" )]
+
+    [SKFunction, Description("List all the user of the current discord server in json format")]
     public async Task<string> ListUsers()
     {
         Console.WriteLine("DiscordPlugin.ListUsers");
         var users = await discordEngine.ListUsers();
-        return users.AsJson();; 
+        return users.AsJson();
+        ;
     }
 
 
@@ -38,13 +36,13 @@ public class DiscordPlugin(DiscordEngine discordEngine)
             ColorConsole.WriteWarning($"user ${username} not found");
             return $"user ${username} not found, use ListUsers to get the list of users";
         }
-        
+
         await discordEngine.SendMessageToUser(username, message);
         ColorConsole.WriteSuccess($"  => message sent to user: {username}: {message}");
         return "message sent";
     }
-    
-    
+
+
     [SKFunction, Description("Given a user an a message, send a message to the user after an amount of time")]
     public async Task<string> SendMessageDelayed(
         [Description("The username of the recipient of the message")]
@@ -59,7 +57,8 @@ public class DiscordPlugin(DiscordEngine discordEngine)
             ColorConsole.WriteWarning($"user ${username} not found");
             return $"user ${username} not found, use ListUsers to get the list of users";
         }
-        
+
+        // that's ok, we don
         Task.Run(async () =>
         {
             await Task.Delay(TimeSpan.FromSeconds(delayInSeconds));
@@ -67,9 +66,8 @@ public class DiscordPlugin(DiscordEngine discordEngine)
             //discordEngine.SetTyping()
             await discordEngine.SendMessageToUser(username, message);
         });
-        
+
         ColorConsole.WriteSuccess($"  => message scheduled for user: {username}");
         return "message scheduled";
     }
-
 }

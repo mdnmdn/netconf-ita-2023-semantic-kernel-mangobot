@@ -3,298 +3,296 @@ using Microsoft.Extensions.Logging;
 
 namespace MangoBot.Runner.Utils;
 
+/// <summary>
+/// Console Color Helper class that provides coloring to individual commands
+///
+/// Credits: @RickStrahl
+/// https://gist.github.com/RickStrahl/52c9ee43bd2723bcdf7bf4d24b029768
+/// 
+/// </summary>
+public static class ColorConsole
+{
+    /// <summary>
+    /// WriteLine with color
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="color"></param>
+    public static void WriteLine(string text, ConsoleColor? color = null)
+    {
+        if (color.HasValue)
+        {
+            var oldColor = System.Console.ForegroundColor;
+            if (color == oldColor)
+                Console.WriteLine(text);
+            else
+            {
+                Console.ForegroundColor = color.Value;
+                Console.WriteLine(text);
+                Console.ForegroundColor = oldColor;
+            }
+        }
+        else
+            Console.WriteLine(text);
+    }
 
     /// <summary>
-    /// Console Color Helper class that provides coloring to individual commands
-    ///
-    /// Credits: @RickStrahl
-    /// https://gist.github.com/RickStrahl/52c9ee43bd2723bcdf7bf4d24b029768
-    /// 
+    /// Writes out a line with a specific color as a string
     /// </summary>
-    public static class ColorConsole
+    /// <param name="text">Text to write</param>
+    /// <param name="color">A console color. Must match ConsoleColors collection names (case insensitive)</param>
+    public static void WriteLine(string text, string color)
     {
-        /// <summary>
-        /// WriteLine with color
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="color"></param>
-        public static void WriteLine(string text, ConsoleColor? color = null)
+        if (string.IsNullOrEmpty(color))
         {
-            if (color.HasValue)
-            {
-                var oldColor = System.Console.ForegroundColor;
-                if (color == oldColor)
-                    Console.WriteLine(text);
-                else
-                {
-                    Console.ForegroundColor = color.Value;
-                    Console.WriteLine(text);
-                    Console.ForegroundColor = oldColor;
-                }
-            }
-            else
-                Console.WriteLine(text);
+            WriteLine(text);
+            return;
         }
 
-        /// <summary>
-        /// Writes out a line with a specific color as a string
-        /// </summary>
-        /// <param name="text">Text to write</param>
-        /// <param name="color">A console color. Must match ConsoleColors collection names (case insensitive)</param>
-        public static void WriteLine(string text, string color)
+        if (!Enum.TryParse(color, true, out ConsoleColor col))
         {
-            if (string.IsNullOrEmpty(color))
-            {
-                WriteLine(text);
-                return;
-            }
-
-            if (!Enum.TryParse(color, true, out ConsoleColor col))
-            {
-                WriteLine(text);
-            }
-            else
-            {
-                WriteLine(text, col);
-            }
+            WriteLine(text);
         }
-
-        /// <summary>
-        /// Write with color
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="color"></param>
-        public static void Write(string text, ConsoleColor? color = null)
+        else
         {
-            if (color.HasValue)
-            {
-                var oldColor = System.Console.ForegroundColor;
-                if (color == oldColor)
-                    Console.Write(text);
-                else
-                {
-                    Console.ForegroundColor = color.Value;
-                    Console.Write(text);
-                    Console.ForegroundColor = oldColor;
-                }
-            }
-            else
+            WriteLine(text, col);
+        }
+    }
+
+    /// <summary>
+    /// Write with color
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="color"></param>
+    public static void Write(string text, ConsoleColor? color = null)
+    {
+        if (color.HasValue)
+        {
+            var oldColor = System.Console.ForegroundColor;
+            if (color == oldColor)
                 Console.Write(text);
-        }
-
-        /// <summary>
-        /// Writes out a line with color specified as a string
-        /// </summary>
-        /// <param name="text">Text to write</param>
-        /// <param name="color">A console color. Must match ConsoleColors collection names (case insensitive)</param>
-        public static void Write(string text, string color)
-        {
-            if (string.IsNullOrEmpty(color))
-            {
-                Write(text);
-                return;
-            }
-
-            if (!ConsoleColor.TryParse(color, true, out ConsoleColor col))
-            {
-                Write(text);
-            }
             else
             {
-                Write(text, col);
+                Console.ForegroundColor = color.Value;
+                Console.Write(text);
+                Console.ForegroundColor = oldColor;
             }
         }
+        else
+            Console.Write(text);
+    }
 
-        #region Wrappers and Templates
-
-
-        /// <summary>
-        /// Writes a line of header text wrapped in a in a pair of lines of dashes:
-        /// -----------
-        /// Header Text
-        /// -----------
-        /// and allows you to specify a color for the header. The dashes are colored
-        /// </summary>
-        /// <param name="headerText">Header text to display</param>
-        /// <param name="wrapperChar">wrapper character (-)</param>
-        /// <param name="headerColor">Color for header text (yellow)</param>
-        /// <param name="dashColor">Color for dashes (gray)</param>
-        public static void WriteWrappedHeader(string headerText,
-                                                char wrapperChar = '-',
-                                                ConsoleColor headerColor = ConsoleColor.Yellow,
-                                                ConsoleColor dashColor = ConsoleColor.DarkGray)
+    /// <summary>
+    /// Writes out a line with color specified as a string
+    /// </summary>
+    /// <param name="text">Text to write</param>
+    /// <param name="color">A console color. Must match ConsoleColors collection names (case insensitive)</param>
+    public static void Write(string text, string color)
+    {
+        if (string.IsNullOrEmpty(color))
         {
-            if (string.IsNullOrEmpty(headerText))
-                return;
-
-            string line = new string(wrapperChar, headerText.Length);
-
-            WriteLine(line,dashColor);
-            WriteLine(headerText, headerColor);
-            WriteLine(line,dashColor);
+            Write(text);
+            return;
         }
 
-        private static Lazy<Regex> colorBlockRegEx = new Lazy<Regex>(
-            ()=>  new Regex("\\[(?<color>.*?)\\](?<text>[^[]*)\\[/\\k<color>\\]", RegexOptions.IgnoreCase), 
-            isThreadSafe: true);
-
-        /// <summary>
-        /// Allows a string to be written with embedded color values using:
-        /// This is [red]Red[/red] text and this is [cyan]Blue[/blue] text
-        /// </summary>
-        /// <param name="text">Text to display</param>
-        /// <param name="baseTextColor">Base text color</param>
-        public static void WriteEmbeddedColorLine(string text, ConsoleColor? baseTextColor = null)
+        if (!ConsoleColor.TryParse(color, true, out ConsoleColor col))
         {
-            if (baseTextColor == null)
-                baseTextColor = Console.ForegroundColor;
+            Write(text);
+        }
+        else
+        {
+            Write(text, col);
+        }
+    }
 
-            if (string.IsNullOrEmpty(text))
+    #region Wrappers and Templates
+
+    /// <summary>
+    /// Writes a line of header text wrapped in a in a pair of lines of dashes:
+    /// -----------
+    /// Header Text
+    /// -----------
+    /// and allows you to specify a color for the header. The dashes are colored
+    /// </summary>
+    /// <param name="headerText">Header text to display</param>
+    /// <param name="wrapperChar">wrapper character (-)</param>
+    /// <param name="headerColor">Color for header text (yellow)</param>
+    /// <param name="dashColor">Color for dashes (gray)</param>
+    public static void WriteWrappedHeader(string headerText,
+        char wrapperChar = '-',
+        ConsoleColor headerColor = ConsoleColor.Yellow,
+        ConsoleColor dashColor = ConsoleColor.DarkGray)
+    {
+        if (string.IsNullOrEmpty(headerText))
+            return;
+
+        string line = new string(wrapperChar, headerText.Length);
+
+        WriteLine(line, dashColor);
+        WriteLine(headerText, headerColor);
+        WriteLine(line, dashColor);
+    }
+
+    private static Lazy<Regex> colorBlockRegEx = new Lazy<Regex>(
+        () => new Regex("\\[(?<color>.*?)\\](?<text>[^[]*)\\[/\\k<color>\\]", RegexOptions.IgnoreCase),
+        isThreadSafe: true);
+
+    /// <summary>
+    /// Allows a string to be written with embedded color values using:
+    /// This is [red]Red[/red] text and this is [cyan]Blue[/blue] text
+    /// </summary>
+    /// <param name="text">Text to display</param>
+    /// <param name="baseTextColor">Base text color</param>
+    public static void WriteEmbeddedColorLine(string text, ConsoleColor? baseTextColor = null)
+    {
+        if (baseTextColor == null)
+            baseTextColor = Console.ForegroundColor;
+
+        if (string.IsNullOrEmpty(text))
+        {
+            WriteLine(string.Empty);
+            return;
+        }
+
+        int at = text.IndexOf("[");
+        int at2 = text.IndexOf("]");
+        if (at == -1 || at2 <= at)
+        {
+            WriteLine(text, baseTextColor);
+            return;
+        }
+
+        while (true)
+        {
+            var match = colorBlockRegEx.Value.Match(text);
+            if (match.Length < 1)
             {
-                WriteLine(string.Empty);
-                return;
+                Write(text, baseTextColor);
+                break;
             }
 
-            int at = text.IndexOf("[");
-            int at2 = text.IndexOf("]");
-            if (at == -1 || at2 <= at)
-            {
-                WriteLine(text, baseTextColor);
-                return;
-            }
+            // write up to expression
+            Write(text.Substring(0, match.Index), baseTextColor);
 
-            while (true)
+            // strip out the expression
+            string highlightText = match.Groups["text"].Value;
+            string colorVal = match.Groups["color"].Value;
+
+            Write(highlightText, colorVal);
+
+            // remainder of string
+            text = text.Substring(match.Index + match.Value.Length);
+        }
+
+        Console.WriteLine();
+    }
+
+    #endregion
+
+    #region Success, Error, Info, Warning Wrappers
+
+    /// <summary>
+    /// Write a Success Line - green
+    /// </summary>
+    /// <param name="text">Text to write out</param>
+    public static void WriteSuccess(string text)
+    {
+        WriteLine(text, ConsoleColor.Green);
+    }
+
+    /// <summary>
+    /// Write a Error Line - Red
+    /// </summary>
+    /// <param name="text">Text to write out</param>
+    public static void WriteError(string text)
+    {
+        WriteLine(text, ConsoleColor.Red);
+    }
+
+    /// <summary>
+    /// Write a Warning Line - Yellow
+    /// </summary>
+    /// <param name="text">Text to Write out</param>
+    public static void WriteWarning(string text)
+    {
+        WriteLine(text, ConsoleColor.DarkYellow);
+    }
+
+
+    /// <summary>
+    /// Write a Info Line - dark cyan
+    /// </summary>
+    /// <param name="text">Text to write out</param>
+    public static void WriteInfo(string text)
+    {
+        WriteLine(text, ConsoleColor.DarkCyan);
+    }
+
+    #endregion
+
+    public static ILoggerFactory LoggerFactory() => new ColorConsoleLoggerFactory();
+
+    class ColorConsoleLoggerFactory : ILoggerFactory
+    {
+        public void Dispose()
+        {
+        }
+
+        public ILogger CreateLogger(string categoryName) => new ColorConsoleLogger(categoryName);
+
+        public void AddProvider(ILoggerProvider provider)
+        {
+        }
+    }
+
+    class ColorConsoleLogger(string category) : ILogger
+    {
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+            Func<TState, Exception, string> formatter)
+        {
+            var txt = formatter(state, exception);
+            switch (logLevel)
             {
-                var match = colorBlockRegEx.Value.Match(text);
-                if (match.Length < 1)
-                {
-                    Write(text, baseTextColor);
+                case LogLevel.Trace:
+                    WriteLine($"[{logLevel}] {category}: - {txt}", ConsoleColor.DarkGray);
                     break;
-                }
-
-                // write up to expression
-                Write(text.Substring(0, match.Index), baseTextColor);
-
-                // strip out the expression
-                string highlightText = match.Groups["text"].Value;
-                string colorVal = match.Groups["color"].Value;
-
-                Write(highlightText, colorVal);
-
-                // remainder of string
-                text = text.Substring(match.Index + match.Value.Length);
+                case LogLevel.Debug:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Gray);
+                    break;
+                case LogLevel.Information:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkCyan);
+                    break;
+                case LogLevel.Warning:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkYellow);
+                    break;
+                case LogLevel.Error:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Red);
+                    break;
+                case LogLevel.Critical:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkRed);
+                    break;
+                case LogLevel.None:
+                    WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkGray);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
             }
-
-            Console.WriteLine();
         }
 
-        #endregion
-
-        #region Success, Error, Info, Warning Wrappers
-
-        /// <summary>
-        /// Write a Success Line - green
-        /// </summary>
-        /// <param name="text">Text to write out</param>
-        public static void WriteSuccess(string text)
+        public bool IsEnabled(LogLevel logLevel)
         {
-            WriteLine(text, ConsoleColor.Green);
+            return true;
         }
-        
-        /// <summary>
-        /// Write a Error Line - Red
-        /// </summary>
-        /// <param name="text">Text to write out</param>
-        public static void WriteError(string text)
+
+        public IDisposable BeginScope<TState>(TState state)
         {
-            WriteLine(text, ConsoleColor.Red);
+            return new DummyDisposable();
         }
 
-        /// <summary>
-        /// Write a Warning Line - Yellow
-        /// </summary>
-        /// <param name="text">Text to Write out</param>
-        public static void WriteWarning(string text)
-        {
-            WriteLine(text, ConsoleColor.DarkYellow);
-        }
-
-
-        /// <summary>
-        /// Write a Info Line - dark cyan
-        /// </summary>
-        /// <param name="text">Text to write out</param>
-        public static void WriteInfo(string text)
-        {
-            WriteLine(text, ConsoleColor.DarkCyan);
-        }
-
-        #endregion
-
-        public static ILoggerFactory LoggerFactory() => new ColorConsoleLoggerFactory();
-
-        class ColorConsoleLoggerFactory : ILoggerFactory
+        private class DummyDisposable : IDisposable
         {
             public void Dispose()
             {
             }
-
-            public ILogger CreateLogger(string categoryName) => new ColorConsoleLogger(categoryName);
-
-            public void AddProvider(ILoggerProvider provider)
-            {
-            }
-        }
-        
-        class ColorConsoleLogger(string category): ILogger
-        {
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-                Func<TState, Exception, string> formatter)
-            {
-                var txt = formatter(state, exception);
-                switch (logLevel)
-                {
-                    case LogLevel.Trace:
-                        WriteLine($"[{logLevel}] {category}: - {txt}", ConsoleColor.DarkGray);
-                        break;
-                    case LogLevel.Debug:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Gray);
-                        break;
-                    case LogLevel.Information:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkCyan);
-                        break;
-                    case LogLevel.Warning:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkYellow);
-                        break;
-                    case LogLevel.Error:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.Red);
-                        break;
-                    case LogLevel.Critical:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkRed);
-                        break;
-                    case LogLevel.None:
-                        WriteLine($"[{logLevel}] {category} - {txt}", ConsoleColor.DarkGray);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
-                } 
-            }
-
-            public bool IsEnabled(LogLevel logLevel)
-            {
-                return true;
-            }
-
-            public IDisposable BeginScope<TState>(TState state)
-            {
-                return new DummyDisposable();
-            }
-            
-            private class DummyDisposable: IDisposable
-            {
-                public void Dispose()
-                {
-                }
-            }
         }
     }
+}

@@ -19,7 +19,7 @@ public class Sample10_ListFunctions
 
         var kernel = new KernelBuilder()
             .WithOpenAIChatCompletionService(
-                modelId: "no",//Constants.OpenAIChatModel,
+                modelId: "no", //Constants.OpenAIChatModel,
                 apiKey: Constants.OpenAIToken)
             .Build();
 
@@ -36,7 +36,8 @@ public class Sample10_ListFunctions
         kernel.ImportSemanticFunctionsFromDirectory(folder, "SummarizePlugin");
 
         // Define a semantic function inline, without naming
-        var sFun1 = kernel.CreateSemanticFunction("tell a joke about {{$input}}", new OpenAIRequestSettings() { MaxTokens = 150 });
+        var sFun1 = kernel.CreateSemanticFunction("tell a joke about {{$input}}",
+            new OpenAIRequestSettings() { MaxTokens = 150 });
 
         // Define a semantic function inline, with plugin name
         var sFun2 = kernel.CreateSemanticFunction(

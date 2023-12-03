@@ -9,19 +9,17 @@ namespace MangoBot.Runner;
 
 public class Program
 {
-    public static async Task Main(string[] args) 
+    public static async Task Main(string[] args)
     {
-        
         var engine = new DiscordEngine(Config.Instance.DiscordToken);
         //var bot = new KernelBotOne(engine);
-        //var bot = new KernelBotTwoWithMemory(engine);
-        var bot = new KernelBotThreeWithPlanner(engine);
+        var bot = new KernelBotTwoWithMemory(engine);
+        // var bot = new KernelBotThreeWithPlanner(engine);
 
         await engine.Start();
         await bot.Init();
-            
+
         // Block this task until the program is closed.
         await Task.Delay(-1);
     }
-   
 }

@@ -4,9 +4,8 @@ namespace MangoBot.Runner.SK;
 
 public abstract class BaseKernelBot
 {
-    
     protected abstract string BotVersion { get; }
-    
+
     protected BaseKernelBot(DiscordEngine discord)
     {
         Discord = discord;

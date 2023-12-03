@@ -123,7 +123,8 @@ internal sealed class TimePlugin
     /// <returns> The date the provided number of days before today </returns>
     [SKFunction]
     [Description("Get the date offset by a provided number of days from today")]
-    public string DaysAgo([Description("The number of days to offset from today"), SKName("input")] double daysOffset, IFormatProvider? formatProvider = null) =>
+    public string DaysAgo([Description("The number of days to offset from today"), SKName("input")] double daysOffset,
+        IFormatProvider? formatProvider = null) =>
         DateTimeOffset.Now.AddDays(-daysOffset).ToString("D", formatProvider);
 
     /// <summary>
@@ -171,9 +172,11 @@ internal sealed class TimePlugin
     /// <returns> The date of the last instance of this day name </returns>
     /// <exception cref="ArgumentOutOfRangeException">dayName is not a recognized name of a day of the week</exception>
     [SKFunction]
-    [Description("Get the date of the last day matching the supplied week day name in English. Example: Che giorno era 'Martedi' scorso -> dateMatchingLastDayName 'Tuesday' => Tuesday, 16 May, 2023")]
+    [Description(
+        "Get the date of the last day matching the supplied week day name in English. Example: Che giorno era 'Martedi' scorso -> dateMatchingLastDayName 'Tuesday' => Tuesday, 16 May, 2023")]
     public string DateMatchingLastDayName(
-        [Description("The day name to match"), SKName("input")] DayOfWeek dayName,
+        [Description("The day name to match"), SKName("input")]
+        DayOfWeek dayName,
         IFormatProvider? formatProvider = null)
     {
         DateTimeOffset dateTime = DateTimeOffset.Now;

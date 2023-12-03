@@ -16,9 +16,6 @@ public class Sample14_SampleMemory
 
     public static async Task RunAsync()
     {
-       
-        
-
         Console.WriteLine("====================================================");
         Console.WriteLine("======== Semantic Memory (volatile, in RAM) ========");
         Console.WriteLine("====================================================");

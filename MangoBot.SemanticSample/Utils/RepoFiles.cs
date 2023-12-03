@@ -30,7 +30,8 @@ internal static class RepoFiles
         if (!SearchPath(Parent + Path.DirectorySeparatorChar + Folder, out string path)
             && !SearchPath(Folder, out path))
         {
-            throw new DirectoryNotFoundException("Plugins directory not found. The app needs the plugins from the repo to work.");
+            throw new DirectoryNotFoundException(
+                "Plugins directory not found. The app needs the plugins from the repo to work.");
         }
 
         return path;

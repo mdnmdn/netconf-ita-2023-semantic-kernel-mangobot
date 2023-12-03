@@ -17,14 +17,14 @@ public class Logger
 
     public static void Error(Exception exception)
     {
-        ColorConsole.WriteEmbeddedColorLine(exception.ToString() ,ConsoleColor.Red);
+        ColorConsole.WriteEmbeddedColorLine(exception.ToString(), ConsoleColor.Red);
     }
 
     public static void MangoChat(string message)
     {
         ColorConsole.WriteEmbeddedColorLine(message, ConsoleColor.Yellow);
     }
-    
+
     public static void Chat(string message, bool isMention = false)
     {
         var color = isMention ? ConsoleColor.Gray : ConsoleColor.DarkGray;

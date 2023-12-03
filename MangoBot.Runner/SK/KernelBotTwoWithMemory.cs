@@ -10,7 +10,7 @@ using Microsoft.VisualBasic;
 
 namespace MangoBot.Runner.SK;
 
-public class KernelBotTwoWithMemory: BaseKernelBot
+public class KernelBotTwoWithMemory : BaseKernelBot
 {
     private readonly IKernel _kernel;
     private readonly ISKFunction _mainFunction;
@@ -18,14 +18,13 @@ public class KernelBotTwoWithMemory: BaseKernelBot
     private bool _init = false;
     private SemanticTextMemory? _memory;
     private IDictionary<string, ISKFunction> _memoryFunctions;
-    
-    protected override string BotVersion { get => "v2"; }
+
+    protected override string BotVersion => "v2";
 
     public KernelBotTwoWithMemory(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
-            
-            //.WithLoggerFactory(ConsoleLogger.LoggerFactory)
+            .WithLoggerFactory(ColorConsole.LoggerFactory())
             .WithOpenAIChatCompletionService(
                 modelId: Config.Instance.ChatModelId,
                 apiKey: Config.Instance.OpenAiToken)
@@ -36,36 +35,36 @@ public class KernelBotTwoWithMemory: BaseKernelBot
         {
             var function = $"{args.FunctionView.PluginName ?? "@"}.{args.FunctionView.Name}";
             ColorConsole.WriteLine($"Function {function} is being invoked");
-            
         };
-        
+
         _kernel.FunctionInvoked += (sender, args) =>
         {
             var function = $"{args.FunctionView.PluginName ?? "@"}.{args.FunctionView.Name}";
             ColorConsole.WriteLine($"Function {function} has been invoked");
         };
-        
-        
-        var promptTemplate = 
+
+
+        var promptTemplate =
             """
             Your name is MangoBot and you are discord server bot, be helpful and answer questions about the server and the users.
-            
+
             If possible use the relevant messages to answer the question.
-            
+
             if you mention a user prefix the name with @, as example for user MangoBot use @MangoBot.
-            
-            
+
+
             -------  Relevant messages   -----------------
             {{Recall}}
             --------------------------------------
-            
+
             User input:
-            
+
             {{$input}}
             """;
 
-        _mainFunction = _kernel.CreateSemanticFunction(promptTemplate, 
-            new OpenAIRequestSettings() {
+        _mainFunction = _kernel.CreateSemanticFunction(promptTemplate,
+            new OpenAIRequestSettings()
+            {
                 MaxTokens = 100, Temperature = 1, TopP = 1
             });
     }
@@ -73,14 +72,15 @@ public class KernelBotTwoWithMemory: BaseKernelBot
     public override async Task Init()
     {
         // Setup memory
-        var embeddingGenerator = new OpenAITextEmbeddingGeneration(Config.Instance.EmbeddingsModelId, Config.Instance.OpenAiToken);
-        
-        var redisStore = await RedisMemoryStoreFactory.CreateSampleRedisMemoryStoreAsync(); 
+        var embeddingGenerator =
+            new OpenAITextEmbeddingGeneration(Config.Instance.EmbeddingsModelId, Config.Instance.OpenAiToken);
+
+        var redisStore = await RedisMemoryStoreFactory.CreateSampleRedisMemoryStoreAsync();
         _memory = new SemanticTextMemory(redisStore, embeddingGenerator);
-        
+
         var memoryPlugin = new TextMemoryPlugin(_memory);
         _memoryFunctions = _kernel.ImportFunctions(memoryPlugin);
-        
+
         _init = true;
         await base.Init();
     }
@@ -90,7 +90,6 @@ public class KernelBotTwoWithMemory: BaseKernelBot
         if (!_init) throw new Exception("Init has not been called");
         try
         {
-
             // save in memory all the messages that are not mentions and are longer than 6 characters
             if (!message.IsMention)
             {
@@ -104,8 +103,8 @@ public class KernelBotTwoWithMemory: BaseKernelBot
             else
             {
                 await Discord.SetTyping(message.OriginalMessage.Channel);
-                
-                
+
+
                 var result = await _kernel.RunAsync(
                     new ContextVariables()
                     {
@@ -114,22 +113,21 @@ public class KernelBotTwoWithMemory: BaseKernelBot
                         [TextMemoryPlugin.RelevanceParam] = "0.79",
                         ["input"] = message.Message
                     },
-                    new ISKFunction[] {
-                       // _memoryFunctions["Recall"],
+                    new ISKFunction[]
+                    {
                         _mainFunction,
-                    }) ;
+                    });
                 var response = result.GetValue<string>();
                 if (response.HasValue())
                     await Discord.SendMessage(message.ChannelId, response!, message.OriginalMessage.Id);
-                
+
                 //await Discord.SendMessage(message.ChannelId, $"Hi {message.Sender} ");
             }
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             await Discord.SendMessage(message.ChannelId, e.ToString());
             Logger.Error(e);
         }
-
-
     }
 }

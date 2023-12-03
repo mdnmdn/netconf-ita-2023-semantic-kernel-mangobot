@@ -8,12 +8,13 @@ namespace MangoBot.Runner.SK;
 /// <summary>
 /// Simple bot 
 /// </summary>
-public class KernelBotOne: BaseKernelBot
+public class KernelBotOne : BaseKernelBot
 {
     private readonly IKernel _kernel;
     private readonly ISKFunction _mainFunction;
 
-    protected override string BotVersion { get => "v1"; }
+    protected override string BotVersion => "v1";
+
     public KernelBotOne(DiscordEngine engine) : base(engine)
     {
         _kernel = new KernelBuilder()
@@ -24,15 +25,17 @@ public class KernelBotOne: BaseKernelBot
                 apiKey: Config.Instance.OpenAiToken)
             .Build();
 
-        var promptTemplate = 
+        var promptTemplate =
             """
-            Your name is MangoBot and you are discord server bot, be helpful and answer questions about the server and the users.
-            
+            Your name is MangoBot and you are discord server bot, 
+            be helpful and answer questions about the server and the users.
+
             {{$input}}
             """;
 
-        _mainFunction = _kernel.CreateSemanticFunction(promptTemplate, 
-            new OpenAIRequestSettings() {
+        _mainFunction = _kernel.CreateSemanticFunction(promptTemplate,
+            new OpenAIRequestSettings()
+            {
                 MaxTokens = 100, Temperature = 1, TopP = 1
             });
     }
@@ -45,20 +48,18 @@ public class KernelBotOne: BaseKernelBot
             if (message.IsMention)
             {
                 await Discord.SetTyping(message.OriginalMessage.Channel);
-                
+
                 var result = await _kernel.RunAsync(message.Message, _mainFunction);
                 var response = result.GetValue<string>();
+                
                 if (response.HasValue())
                     await Discord.SendMessage(message.ChannelId, response!, message.OriginalMessage.Id);
-                
-                //await Discord.SendMessage(message.ChannelId, $"Hi {message.Sender} ");
             }
-        }catch(Exception e)
+        }
+        catch (Exception e)
         {
             await Discord.SendMessage(message.ChannelId, e.ToString());
             Logger.Error(e);
         }
-
-
     }
 }

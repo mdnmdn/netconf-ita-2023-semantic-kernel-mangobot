@@ -14,6 +14,7 @@ public sealed class StaticTextPlugin
     [SKFunction, Description("Append the day variable")]
     public static string AppendDay(
         [Description("Text to append to")] string input,
-        [Description("Value of the day to append")] string day) =>
+        [Description("Value of the day to append")]
+        string day) =>
         input + day;
 }

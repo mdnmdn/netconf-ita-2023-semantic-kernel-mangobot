@@ -5,8 +5,8 @@ public static class DotEnv
     public static void LoadRecursiveParent(int levels = 5)
     {
         var path = Directory.GetCurrentDirectory();
-        
-        for(var level = 0; level< levels; level++)
+
+        for (var level = 0; level < levels; level++)
         {
             var filePath = Path.Combine(path, ".env");
             if (File.Exists(filePath))
@@ -18,7 +18,7 @@ public static class DotEnv
             path = Path.Combine(path, "..");
         }
     }
-    
+
     public static void Load(string filePath)
     {
         if (!File.Exists(filePath))

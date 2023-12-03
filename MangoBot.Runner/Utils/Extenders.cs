@@ -12,8 +12,8 @@ public static class Extenders
 
     public static bool IsNullOrEmpty(this string? str) => String.IsNullOrWhiteSpace(str);
     public static bool HasValue(this string? str) => !str.IsNullOrEmpty();
-    
-    
+
+
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
     public static string AsJson(this object obj)

@@ -19,7 +19,7 @@ public class Sample28_ActionPlanner
         Console.WriteLine("======== Action Planner ========");
         string openAIModelId = Constants.OpenAIChatModel;
         string openAIApiKey = Constants.OpenAIToken;
-        
+
         IKernel kernel = new KernelBuilder()
             .WithLoggerFactory(ConsoleLogger.LoggerFactory)
             .WithOpenAIChatCompletionService(
@@ -53,7 +53,7 @@ public class Sample28_ActionPlanner
         // Show the result, which should match the given goal
         Console.WriteLine(result.GetValue<string>());
 
-        
+
         Console.WriteLine("======== Without Action Planner ========");
 
         kernel.ImportSemanticFunctionsFromDirectory(samplesDirectory, "MdnPlugin");
@@ -71,5 +71,4 @@ public class Sample28_ActionPlanner
          * But she didn't have a queenly bone in her body
          */
     }
-    
 }
